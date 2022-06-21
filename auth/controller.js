@@ -5,7 +5,7 @@ const auth = require("./auth.schema.js");
 
 //let users = [];
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   const {
     email,
     password,
@@ -21,6 +21,15 @@ const register = async (req, res) => {
     res.status(200);
     throw new Error("Email / Password required...!!!");
   }
+
+  const existingUser = await auth.findOne({ email });
+  // console.log(user);
+  if (existingUser) {
+    res.status(400);
+    next(new Error("Email already exist"));
+    return;
+  }
+
   let user = {
     email,
     password,
